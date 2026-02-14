@@ -14,7 +14,10 @@ $(warning You don't have a $(HOME)/moneroaddress.txt file)
 $(warning Developer jcomeauictx's chosen address will be used)
 $(warning Control-C and fix this if you want mining rewards!)
 MONERO_ADDRESS := $(shell cat moneroaddress.txt)
+endif
 CUDA_LOADER := $(PWD)-cuda/src/libxmrig-cuda.so
+ifneq ($(SHOWENV),)
+ export
 endif
 run: $(TARGETS) $(CONFIG)
 	@if [ "$(SUDO)" ]; then \
@@ -22,6 +25,9 @@ run: $(TARGETS) $(CONFIG)
 	 echo 'But mining will be suboptimal' >&2; \
 	fi
 	$(SUDO) $< --config $(CONFIG)
+	@echo NOTE: config will be updated by xmrig on first run
+remake:
+	$(MAKE) clean run
 $(CONFIG): src/config.json
 	@echo WARNING: overwriting $(CONFIG) >&2
 	sed \
@@ -30,8 +36,6 @@ $(CONFIG): src/config.json
 	 $< > $@
 src/xmrig: src/Makefile src/config.json
 	$(MAKE) -C $(@D)
-	# remaking user config with possibly-modified config.json
-	$(MAKE) $(CONFIG)
 src/Makefile:
 	which cmake || sudo $(MAKE) requirements
 	cd $(@D) && cmake ..
@@ -47,4 +51,10 @@ clean:
 	$(MAKE) -C src clean
 	$(MAKE) -C ../xmrig-cuda/src clean
 	cp -f config.json.orig src/
+env:
+ifeq ($(SHOWENV),)
+	$(MAKE) SHOWENV=1 $@
+else
+	$@
+endif
 .FORCE:
