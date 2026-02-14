@@ -50,7 +50,7 @@
     },
     "cuda": {
         "enabled": true,
-        "loader": "LIBCUDA_LOADER",
+        "loader": "CUDA_LOADER",
         "nvml": true,
         "cn/0": false,
         "cn-lite/0": false
