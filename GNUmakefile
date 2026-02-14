@@ -4,6 +4,9 @@ CONFIG := $(HOME)/xmrig.json
 ORIGIN := $(shell git remote get-url origin)
 REQUIRED := cmake libhwloc-dev libuv1-dev libssl-dev nvidia-cuda-dev \
 	    nvidia-cuda-toolkit-gcc vim
+CUDAFLAGS := -DCMAKE_C_COMPILER=cuda-gcc \
+	     -DCMAKE_CXX_COMPILER=cuda-g++ \
+	     -DCUDA_HOST_COMPILER=cuda-gcc
 run: $(TARGETS)
 	sudo $< --config $(CONFIG)
 src/xmrig: src/Makefile
@@ -14,7 +17,7 @@ src/Makefile:
 ../xmrig-cuda/src/libxmrig-cuda.so: ../xmrig-cuda/src/Makefile
 	$(MAKE) -C $(@D)
 ../xmrig-cuda/src/Makefile: | ../xmrig-cuda/src
-	cd $(@D) && cmake ..
+	cd $(@D) && cmake .. $(CUDAFLAGS)
 ../xmrig-cuda/src:
 	cd .. && git clone $(ORIGIN)-cuda
 requirements:
