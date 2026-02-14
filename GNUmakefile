@@ -9,6 +9,13 @@ CUDAFLAGS := -DCMAKE_C_COMPILER=cuda-gcc \
 	     -DCUDA_HOST_COMPILER=cuda-gcc
 SUDO ?= sudo
 MONERO_ADDRESS := $(shell cat $(HOME)/moneroaddress.txt)
+ifeq ($(MONERO_ADDRESS),)
+$(warning You don't have a $(HOME)/moneroaddress.txt file)
+$(warning Developer jcomeauictx's chosen address will be used)
+$(warning Control-C and fix this if you want mining rewards!)
+MONERO_ADDRESS := $(shell cat moneroaddress.txt)
+CUDA_LOADER := $(PWD)-cuda/src/libxmrig-cuda.so
+endif
 run: $(TARGETS) $(CONFIG)
 	@if [ "$(SUDO)" ]; then \
 	 echo If you would rather not use sudo, '`make SUDO=`' >&2; \
@@ -16,10 +23,13 @@ run: $(TARGETS) $(CONFIG)
 	fi
 	$(SUDO) $< --config $(CONFIG)
 $(CONFIG): src/config.json
-	sed -e \
-	 's/\<YOUR_WALLET_ADDRESS\>/$(MONERO_ADDRESS)/' \
+	sed \
+	 -e 's/\<YOUR_WALLET_ADDRESS\>/$(MONERO_ADDRESS)/' \
+	 -e 's%\<CUDA_LOADER\>%$(CUDA_LOADER)%' \
 	 $< > $@
-src/xmrig: src/Makefile
+src/config.json: config.json
+	cp -f $< $@
+src/xmrig: src/Makefile src/config.json
 	$(MAKE) -C $(@D)
 src/Makefile:
 	which cmake || sudo $(MAKE) requirements
