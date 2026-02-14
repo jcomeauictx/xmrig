@@ -31,6 +31,8 @@ src/config.json: config.json
 	cp -f $< $@
 src/xmrig: src/Makefile src/config.json
 	$(MAKE) -C $(@D)
+	# remaking user config with possibly-modified config.json
+	$(MAKE) $(CONFIG)
 src/Makefile:
 	which cmake || sudo $(MAKE) requirements
 	cd $(@D) && cmake ..
@@ -42,3 +44,7 @@ src/Makefile:
 	cd .. && git clone $(ORIGIN)-cuda
 requirements:
 	sudo apt install $(REQUIRED)
+clean:
+	$(MAKE) -C src clean
+	$(MAKE) -C ../xmrig-cuda/src clean
+	cp -f config.json.orig src/
