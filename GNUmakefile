@@ -22,6 +22,8 @@ run: $(TARGETS) $(CONFIG)
 	 echo 'But mining will be suboptimal' >&2; \
 	fi
 	$(SUDO) $< --config $(CONFIG)
+config.json: .FORCE
+	touch $@
 $(CONFIG): src/config.json
 	@echo WARNING: overwriting $(CONFIG) >&2
 	sed \
@@ -50,3 +52,5 @@ clean:
 	$(MAKE) -C src clean
 	$(MAKE) -C ../xmrig-cuda/src clean
 	cp -f config.json.orig src/
+.FORCE:
+.PRECIOUS: src/config.json
