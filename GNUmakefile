@@ -23,11 +23,13 @@ run: $(TARGETS) $(CONFIG)
 	fi
 	$(SUDO) $< --config $(CONFIG)
 $(CONFIG): src/config.json
+	@echo WARNING: overwriting $(CONFIG) >&2
 	sed \
 	 -e 's/\<YOUR_WALLET_ADDRESS\>/$(MONERO_ADDRESS)/' \
 	 -e 's%\<CUDA_LOADER\>%$(CUDA_LOADER)%' \
 	 $< > $@
 src/config.json: config.json
+	@echo WARNING: overwriting src/config.json >&2
 	cp -f $< $@
 src/xmrig: src/Makefile src/config.json
 	$(MAKE) -C $(@D)
