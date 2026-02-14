@@ -22,17 +22,12 @@ run: $(TARGETS) $(CONFIG)
 	 echo 'But mining will be suboptimal' >&2; \
 	fi
 	$(SUDO) $< --config $(CONFIG)
-config.json: .FORCE
-	touch $@
 $(CONFIG): src/config.json
 	@echo WARNING: overwriting $(CONFIG) >&2
 	sed \
 	 -e 's/\<YOUR_WALLET_ADDRESS\>/$(MONERO_ADDRESS)/' \
 	 -e 's%\<CUDA_LOADER\>%$(CUDA_LOADER)%' \
 	 $< > $@
-src/config.json: config.json
-	@echo WARNING: overwriting src/config.json >&2
-	cp -f $< $@
 src/xmrig: src/Makefile src/config.json
 	$(MAKE) -C $(@D)
 	# remaking user config with possibly-modified config.json
@@ -53,4 +48,3 @@ clean:
 	$(MAKE) -C ../xmrig-cuda/src clean
 	cp -f config.json.orig src/
 .FORCE:
-.PRECIOUS: src/config.json
