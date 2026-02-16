@@ -1,6 +1,5 @@
 # systemd user service for monerod
 # Install to ~/.config/systemd/user/ via: make install-services
-# Set WALLET in ~/.config/p2pool/env
 [Unit]
 Description=Monero daemon (monerod)
 After=network-online.target
@@ -8,7 +7,6 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-EnvironmentFile=-%h/.config/p2pool/env
 ExecStart=monerod \
     --zmq-pub tcp://127.0.0.1:18083 \
     --out-peers 32 --in-peers 64 \

@@ -66,7 +66,7 @@ install-services: $(SERVICE_FILES)
 	cp $(SERVICE_FILES) $(SYSTEMD_USER_DIR)/
 	systemctl --user daemon-reload
 	@echo "Installed service files to $(SYSTEMD_USER_DIR)"
-	@echo "Configure wallet in ~/.config/p2pool/env"
+	@echo "Place your Monero wallet address in $(HOME)/moneroaddress.txt"
 	@echo "Then: systemctl --user enable --now monerod p2pool xmrig"
 	@if loginctl show-user $(USER) --property=Linger 2>/dev/null \
 	    | grep -q 'Linger=no'; then \
