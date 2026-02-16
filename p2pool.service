@@ -15,12 +15,12 @@ ExecStartPre=/bin/bash -c '\
         echo "WARNING: Mining rewards will go to developer (jcomeauictx)!" >&2; \
     fi'
 ExecStart=/bin/bash -c '\
+    cd %h/.p2pool && \
     exec %h/src/jcomeauictx/p2pool/p2pool \
         --host 127.0.0.1 \
         --wallet $$(cat %h/moneroaddress.txt \
             %h/src/jcomeauictx/xmrig/moneroaddress.txt \
             2>/dev/null | head -n 1)'
-WorkingDirectory=%h/.p2pool
 Restart=on-failure
 RestartSec=30
 TimeoutStopSec=60
