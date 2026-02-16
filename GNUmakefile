@@ -61,7 +61,7 @@ endif
 SERVICE_FILES := monerod.service p2pool.service xmrig.service
 SYSTEMD_USER_DIR := $(HOME)/.config/systemd/user
 
-install-services: $(SERVICE_FILES)
+install-services: $(SERVICE_FILES) $(CONFIG)
 	@mkdir -p $(SYSTEMD_USER_DIR)
 	cp $(SERVICE_FILES) $(SYSTEMD_USER_DIR)/
 	systemctl --user daemon-reload
