@@ -1,0 +1,16 @@
+# systemd user service for SSH tunnel to remote p2pool-server
+# Used when p2pool-server is defined in /etc/hosts
+# Install to ~/.config/systemd/user/p2pool.service via: make install-services
+[Unit]
+Description=SSH tunnel to remote p2pool server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/ssh -N -L 3333:127.0.0.1:3333 p2pool-server
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=default.target

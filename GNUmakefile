@@ -58,16 +58,25 @@ else
 	$@
 endif
 # systemd user service files
-SERVICE_FILES := monerod.service p2pool.service xmrig.service
+P2POOL_SERVER := $(shell getent hosts p2pool-server 2>/dev/null | awk '{print $$1}')
 SYSTEMD_USER_DIR := $(HOME)/.config/systemd/user
 
-install-services: $(SERVICE_FILES) $(CONFIG)
+install-services: $(CONFIG)
 	@mkdir -p $(SYSTEMD_USER_DIR)
-	cp $(SERVICE_FILES) $(SYSTEMD_USER_DIR)/
-	systemctl --user daemon-reload
-	@echo "Installed service files to $(SYSTEMD_USER_DIR)"
-	@echo "Place your Monero wallet address in $(HOME)/moneroaddress.txt"
-	@echo "Then: systemctl --user enable --now monerod p2pool xmrig"
+	@if [ -n "$(P2POOL_SERVER)" ]; then \
+	  echo "p2pool-server found at $(P2POOL_SERVER), using SSH tunnel proxy"; \
+	  cp p2pool-proxy.service $(SYSTEMD_USER_DIR)/p2pool.service; \
+	  cp xmrig.service $(SYSTEMD_USER_DIR)/; \
+	  systemctl --user daemon-reload; \
+	  echo "Installed p2pool-proxy and xmrig services to $(SYSTEMD_USER_DIR)"; \
+	  echo "Then: systemctl --user enable --now p2pool xmrig"; \
+	else \
+	  cp monerod.service p2pool.service xmrig.service $(SYSTEMD_USER_DIR)/; \
+	  systemctl --user daemon-reload; \
+	  echo "Installed service files to $(SYSTEMD_USER_DIR)"; \
+	  echo "Place your Monero wallet address in $(HOME)/moneroaddress.txt"; \
+	  echo "Then: systemctl --user enable --now monerod p2pool xmrig"; \
+	fi
 	@if loginctl show-user $(USER) --property=Linger 2>/dev/null \
 	    | grep -q 'Linger=no'; then \
 	  echo "WARNING: Linger is not enabled for user $(USER)."; \
