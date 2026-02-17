@@ -58,7 +58,8 @@ else
 	$@
 endif
 # systemd user service files
-P2POOL_SERVER := $(shell getent hosts p2pool-server 2>/dev/null | awk '{print $$1}')
+P2POOL_SERVER := $(shell getent -s files hosts p2pool-server 2>/dev/null \
+		 | awk '{print $$1}')
 SYSTEMD_USER_DIR := $(HOME)/.config/systemd/user
 
 install-services: $(CONFIG)
